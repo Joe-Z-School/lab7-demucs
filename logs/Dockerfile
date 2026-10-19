@@ -1,5 +1,5 @@
 FROM python:3.6-alpine
-LABEL MAINTAINER="PUT YOUR EMAIL HERE"
+LABEL MAINTAINER="joe.zakrzewski@colorado.edu"
 
 RUN  pip3 install redis
 
