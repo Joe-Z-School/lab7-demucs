@@ -1,2 +1,5 @@
 Flask
 jsonpickle
+redis
+requests
+boto3
