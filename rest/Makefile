@@ -1,11 +1,11 @@
 VERSION=v1
-DOCKERUSER=jozski
+DOCKERUSER=joezski
 
 build:
-	docker build -f Dockerfile-rest -t demucs-rest .
+	docker build -f Dockerfile -t rest-server .
 
 push:
-	docker tag demucs-rest $(DOCKERUSER)/demucs-rest:$(VERSION)
-	docker push $(DOCKERUSER)/demucs-rest:$(VERSION)
-	docker tag demucs-rest $(DOCKERUSER)/demucs-rest:latest
-	docker push $(DOCKERUSER)/demucs-rest:latest
+	docker tag rest-server $(DOCKERUSER)/rest-server:$(VERSION)
+	docker push $(DOCKERUSER)/rest-server:$(VERSION)
+	docker tag rest-server $(DOCKERUSER)/rest-server:latest
+	docker push $(DOCKERUSER)/rest-server:latest
