@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: logs
-        image: dirkcgrunwald/demucs-logs:v9
+        image: joezski/demucs-logs:v1
         resources:
           requests:
             cpu: 100m
