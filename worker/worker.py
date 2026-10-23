@@ -38,6 +38,7 @@ while True:
         # Perform waveform separation using the specified model
         origin, separatedTracks = separator.separate_audio_file(audioPath)
 
+        # Make a directory for the separated tracks locally
         os.makedirs(songhash, exist_ok=True)
 
         # Upload separated tracks back to RustFS
@@ -48,3 +49,9 @@ while True:
 
             trackObjectKey = f"{songhash}/{trackName}.wav"
             client.upload_file(trackPath, bucket, trackObjectKey)
+
+        # Clean up local files
+        os.remove(audioPath)
+        for trackName, trackData in separatedTracks.items():
+            os.remove(f"{songhash}/{trackName}.wav")
+        os.rmdir(songhash)
