@@ -4,10 +4,31 @@ from flask import Flask, make_response, request, Response
 import json, jsonpickle
 import os
 import base64
+import redis
 
+import boto3
 
+endpoint = os.getenv("RUSTFS_ENDPOINT", "http://rustfs:9000")
+access_key = os.getenv("AWS_ACCESS_KEY_ID", "user")
+secret_key = os.getenv("AWS_SECRET_ACCESS_KEY", "userpassword")
+bucket_name = os.getenv("RUSTFS_BUCKET", "demucs")
+
+client = boto3.client(
+    "s3",
+    endpoint_url=endpoint,
+    aws_access_key_id=access_key,
+    aws_secret_access_key=secret_key,
+    region_name=os.getenv("AWS_DEFAULT_REGION", "us-east-1"),
+)
+
+existing = {item["Name"] for item in client.list_buckets().get("Buckets", [])}
+if bucket_name not in existing:
+    print(f"Creating bucket: {bucket_name}")
+    client.create_bucket(Bucket=bucket_name)
 
 app = Flask(__name__)
+
+redisClient = redis.Redis(host='redis', port=6379, db=0, decode_responses=True)
 
 @app.route('/')
 def index():
@@ -21,8 +42,27 @@ return a unique identifier (songhash) that can later be used to retrieve the sep
 '''
 @app.route('/apiv1/separate', methods=['POST'])
 def separate():
+    # Parse and validate the JSON request.
+    # Decode the base64-encoded MP3 data.
+    # Store the original audio in RustFS.
+    # Generate a unique song identifier.
+    # Enqueue a job in Redis with the identifier and storage location.
+    # Return the identifier to the client.
     data = request.get_json(force=True)
+    # Hash the audio data to create a unique identifier for the song
+    songhash = str(hash(data["audio"]))
+    client.put_object(Bucket=bucket_name, Key=songhash + ".mp3", Body=base64.b64decode(data["audio"]))
 
+    job = {
+        "songhash": songhash,
+        "bucket": bucket_name,
+        "object_key": songhash + ".mp3",
+        "model": "htdemucs"
+    }
+
+    redisClient.lpush("separation_queue", json.dumps(job))
+
+    return json.dumps({"songhash": songhash})
 
 '''
 Route /apiv1/queue/[GET] will dump the queued entries from the Redis database
@@ -34,20 +74,16 @@ def queue():
 
 '''
 Route /apiv1/track/<string:track> is a GET request that will return the specified track 
-as a binary download. The track parameter can be any of base, vocals, drums, or other. 
+as a binary download. The track parameter can be any of bass, vocals, drums, or other. 
 The response will have the appropriate Content-Type and Content-Disposition headers set 
 so that the client can save the file with the correct name and extension.
 The track information will be passed in the form of the unique identifier
 (songhash) that was returned by the /apiv1/separate route.
 '''
-@app.route('/apiv1/track/<string:track>', methods=['GET'])
-def track(track):
-    trackFile = getTrackFile(track)
-    response = make_response(trackFile)
-    response.headers.set('Content-Type', 'mp3')
-    response.headers.set(
-        'Content-Disposition', 'attachment', filename='%s.mp3' % track)
-    return response
+trackTypes = ["bass", "vocals", "drums", "other"]
+@app.route('/apiv1/track/<string:songhash>/<string:track>', methods=['GET'])
+def getTrack(songhash, track):
+    pass
 
 
 '''
@@ -56,8 +92,8 @@ This could be a DELETE response since that would be a more "restful" semantics.
 The track information will be passed in the form of the unique identifier 
 (songhash) that was returned by the /apiv1/separate route.
 '''
-@app.route('/apiv1/remove/<string:track>', methods=['GET'])
-def remove(track):
+@app.route('/apiv1/remove/<string:songhash>/<string:track>', methods=['GET'])
+def remove(songhash, track):
     pass
 
 
