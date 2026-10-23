@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rest
+spec:
+  type: ClusterIP
+  selector:
+    app: rest
+  ports:
+    - name: http
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
+
+# Port = Used by other resources inside the cluster to access this service
+# targetPort = The port on the pods container where the application is listening for traffic
