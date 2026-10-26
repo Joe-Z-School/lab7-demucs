@@ -8,7 +8,8 @@ from demucs.api import Separator, save_audio
 endpoint = os.getenv("RUSTFS_ENDPOINT", "http://rustfs:9000")
 access_key = os.getenv("AWS_ACCESS_KEY_ID", "user")
 secret_key = os.getenv("AWS_SECRET_ACCESS_KEY", "userpassword")
-bucket_name = os.getenv("RUSTFS_BUCKET", "demucs")
+queue_bucket_name = os.getenv("RUSTFS_QUEUE_BUCKET", "queue")
+output_bucket_name = os.getenv("RUSTFS_OUTPUT_BUCKET", "output")
 
 client = boto3.client(
     "s3",
@@ -48,7 +49,7 @@ while True:
             save_audio(trackData, trackPath, samplerate=separator.samplerate)
 
             trackObjectKey = f"{songhash}/{trackName}.wav"
-            client.upload_file(trackPath, bucket, trackObjectKey)
+            client.upload_file(trackPath, output_bucket_name, trackObjectKey)
 
         # Clean up local files
         os.remove(audioPath)
