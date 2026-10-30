@@ -59,3 +59,5 @@ sys.exit(0)
 # When running again, make sure to port-forward again:
 # kubectl port-forward svc/rustfs-svc 9000:9000 9001:9001
 # kubectl port-forward --address 0.0.0.0 service/redis 6379:6379
+# May need nginx:
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/cloud/deploy.yaml
