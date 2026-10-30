@@ -11,7 +11,7 @@ import glob
 #
 # Use localhost & port 5000 if not specified by environment variable REST
 #
-REST = os.getenv("REST") or "localhost:5000"
+REST = os.getenv("REST") or "localhost"
 
 ##
 # The following routine makes a JSON REST query of the specified type
@@ -53,3 +53,9 @@ for mp3 in glob.glob("data/short*mp3"):
     mkReq(requests.get, "apiv1/queue", data=None)
 
 sys.exit(0)
+
+# Test gettings a file:
+# curl -o vocals.wav http://localhost/apiv1/track/1157198167846626770/vocals was used for testing, hash may be different
+# When running again, make sure to port-forward again:
+# kubectl port-forward svc/rustfs-svc 9000:9000 9001:9001
+# kubectl port-forward --address 0.0.0.0 service/redis 6379:6379
