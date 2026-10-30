@@ -9,7 +9,7 @@ import redis
 import boto3
 from botocore.exceptions import ClientError
 
-endpoint = os.getenv("RUSTFS_ENDPOINT", "http://rustfs:9000")
+endpoint = os.getenv("RUSTFS_ENDPOINT", "http://rustfs-svc:9000")
 access_key = os.getenv("AWS_ACCESS_KEY_ID", "user")
 secret_key = os.getenv("AWS_SECRET_ACCESS_KEY", "userpassword")
 queue_bucket_name = os.getenv("RUSTFS_QUEUE_BUCKET", "queue")
@@ -65,7 +65,7 @@ def separate():
     response = jsonpickle.encode({'hash':songhash,'reason': "Song enqueued for separation"})
     return Response(
         response=response,
-        status=202,
+        status=200,
         mimetype='application/json'
     )
 
