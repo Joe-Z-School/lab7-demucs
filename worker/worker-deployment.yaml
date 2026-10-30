@@ -17,4 +17,4 @@ spec:
     spec:
       containers:
         - name: demucs-worker
-          image: joezski/demucs-worker:v1
+          image: joezski/demucs-worker:v2
