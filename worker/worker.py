@@ -5,7 +5,7 @@ import os
 import base64
 from demucs.api import Separator, save_audio
 
-endpoint = os.getenv("RUSTFS_ENDPOINT", "http://rustfs:9000")
+endpoint = os.getenv("RUSTFS_ENDPOINT", "http://rustfs-svc:9000")
 access_key = os.getenv("AWS_ACCESS_KEY_ID", "user")
 secret_key = os.getenv("AWS_SECRET_ACCESS_KEY", "userpassword")
 queue_bucket_name = os.getenv("RUSTFS_QUEUE_BUCKET", "queue")
