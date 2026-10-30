@@ -1,3 +1,4 @@
 redis
 boto3
 demucs
+numpy
